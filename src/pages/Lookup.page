@@ -1,0 +1,96 @@
+<apex:page controller="LookupController" showheader="false" sidebar="false">
+<script language="javascript">
+   window.onload = new function() 
+   { 
+      // bring popup window to front
+      window.focus(); 
+      var ele=document.getElementById('{!$Component.form.block.section.query}');
+      if (ele)
+      {
+         ele.focus();
+      }
+   }
+   
+   function fillIn(name, id)
+   {
+      var winMain=window.opener;
+      if (null==winMain)
+      {
+         winMain=window.parent.opener;
+      }
+      var ele=winMain.document.getElementById('{!$CurrentPage.parameters.namefield}');
+      ele.value=name;
+      ele=winMain.document.getElementById('{!$CurrentPage.parameters.idfield}');
+      ele.value=id;      
+      CloseWindow();
+   }
+
+   function CloseWindow()
+   {
+      var winMain=window.opener;
+      if (null==winMain)
+      {
+         winMain=window.parent.opener;
+      }
+      winMain.closeLookupPopup();
+   }
+</script>
+
+
+<apex:form >
+	
+	<apex:pagemessages />
+	<apex:outputpanel rendered="{!if(datatype == "REFERENCE",true,false)}">
+	<apex:pageBlock title="Lookup" >
+		<apex:pageblocktable value="{!lstObject}" var="row" rendered="{!if(lstObject.size > 0 ,true,false)}"> 
+	    		<apex:repeat value="{!fldnames}" var="fieldname">       			
+	           		<apex:column value="{!row[fieldname]}" rendered="{!if(fieldname == "Name",false,true)}"/> 
+					<apex:column rendered="{!if(fieldname == "Name",true,false)}">
+						<apex:facet name="header">Name</apex:facet>
+						<apex:outputlink value="#" onclick="fillIn('{!row['Name']}', '{!row['id']}')">{!row[fieldname]} </apex:outputlink> 
+					</apex:column>
+	           	</apex:repeat>
+	       		<br/>
+	    	</apex:pageblocktable><br/>
+	</apex:pageBlock>
+	</apex:outputpanel>
+	
+	<apex:outputpanel rendered="{!if(datatype == "PICKLIST",true,false)}" >
+	<apex:pageBlock title="Picklist Values" >
+		
+		<apex:pageBlockButtons >
+		<apex:commandButton value="Insert Selected" action="{!processSelected}" oncomplete="fillIn('{!vals}', '')"/>
+		</apex:pageBlockButtons>
+		<apex:pageblocktable value="{!lstwrap}" var="wrap" > 
+	    		    <apex:column headerValue="Select"> 			
+	           			<apex:inputcheckbox value="{!wrap.isChecked}"/>
+	           		</apex:column>
+	           		<apex:column headerValue="Lable">
+	           			<apex:outputtext value="{!wrap.name}"/>
+	           		</apex:column>	           	
+	       		<br/>
+	    	</apex:pageblocktable><br/>
+	</apex:pageBlock>
+	</apex:outputpanel>
+	
+	
+	
+	<apex:outputpanel rendered="{!if(datatype == "BOOLEAN",true,false)}" >
+	<apex:pageBlock title="Select the picklist values to add below." >
+		
+		<apex:pageBlockButtons >
+		<apex:commandButton value="Insert Selected" action="{!BooleanSelected}" oncomplete="fillIn('{!booleanval}', '')"/>
+		</apex:pageBlockButtons>
+
+						<apex:selectRadio value="{!booleanval}" layout="pageDirection" borderVisible="true">
+						     <apex:selectOption itemValue="True" itemLabel="True"/>
+            				 <apex:selectOption itemValue="False" itemLabel="False"/>
+						 </apex:selectRadio>
+
+	</apex:pageBlock>
+	</apex:outputpanel>
+	
+	
+	
+</apex:form>
+</apex:page>

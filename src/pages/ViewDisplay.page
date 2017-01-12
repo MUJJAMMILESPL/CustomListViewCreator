@@ -1,0 +1,129 @@
+<apex:page controller="ViewDisplayController"  >
+<apex:form >
+<style>
+.overlayStatus
+        {
+            position:fixed;
+            left:0;
+            top:0;
+            width:100%;
+            height:100%;
+            text-align:center;
+            vertical-align: middle;
+            background-color: #dcdcdc;
+            opacity:0.6;
+            filter:alpha(opacity=60);
+            z-index: 20 ;
+        }
+        .loadIMG
+        {
+         position : absolute;    
+		  width:30px;
+		  height:30px;
+		  left:50%;
+		  top:50%;
+		  margin-left:-100px;
+		  margin-top:-60px;         
+        }
+
+        .loadLabel
+        {
+            position : absolute;
+            font-weight:bold;
+            font-size:14px;
+            left:50%;
+			top:50%;
+			margin-left:-100px;
+			margin-top:-30px;
+            color:black;
+            align:center;
+        }       
+
+</style>
+
+<apex:pagemessages id="errmsg"/>
+<apex:actionStatus id="actStatusId" layout="block">		 	
+	     <apex:facet name="start" >
+	     <apex:outputpanel Styleclass="overlayStatus">
+	           <img src="/img/loading32.gif"  Class="loadIMG"/>
+	           <Label  Class="loadLabel">Processing...</Label>	                               
+	     </apex:outputpanel>
+	     </apex:facet>	     
+	 </apex:actionStatus>
+<apex:actionFunction name="rerenderStates" action="{!getRecord}" rerender="rec,showOption,errmsg,ResultPanel" status="actStatusId"/>
+<apex:actionFunction name="rerenderStates1"  rerender="rec" status="actStatusId"/>	
+<apex:actionFunction name="rerenderStates2"  rerender="head,result,rec,errmsg,showOption" action="{!showRec}" status="actStatusId"/>
+<apex:outputpanel id="head">
+<apex:sectionHeader title="{!objectname}" subtitle="Home"/></apex:outputpanel>
+
+<apex:outputpanel id="obj">	 
+	<apex:outputtext value="Select Object :" style="font-size:12px;font-family:Arial;color:#000000;"/>
+	<apex:selectlist value="{!objectname}" size="1" onChange="rerenderStates2()" >
+		<apex:selectOptions value="{!op}" />
+	</apex:selectlist>
+</apex:outputpanel>
+<br/><br/>
+<apex:outputpanel id="result" >
+	<apex:outputpanel rendered = "{!view.size > 0}" >	
+	<apex:outputtext value="View : " style="font-size:12px;font-family:Arial;color:#000000;"/>
+	<apex:selectlist value="{!name}" size="1" onChange="rerenderStates()" >
+		<apex:selectoptions value="{!view}"/>
+		</apex:selectlist>
+	</apex:outputpanel>
+		<apex:outputpanel rendered="{!showEditdelete}" id="showOption">			
+			<apex:commandlink value="Edit " action="{!editview}"/>|
+			<apex:commandlink value=" Delete "  action="{!del}" oncomplete="rerenderStates2()" />|			
+		</apex:outputpanel>		
+		<apex:commandlink value=" Create New View " action="{!newview}"/>
+		
+		<br/><br/>
+		
+		
+		<apex:outputpanel id="ResultPanel">
+		<apex:pageblock title="{!name} view for {!objectname} "  rendered="{!show}">
+			<br/>
+			<apex:pageblocktable value="{!lstQuote}" var="row" id="rec" > 
+	    		<apex:repeat value="{!fldnames}" var="fieldname">       			
+	           		<apex:column value="{!row[fieldname]}" rendered="{!if(fieldname == "Name",false,true)}"/> 
+					<apex:column rendered="{!if(fieldname == "Name",true,false)}">
+						<apex:facet name="header">Name</apex:facet>
+						<apex:outputlink value="/{!row["id"]}">{!row[fieldname]} </apex:outputlink> 
+					</apex:column>
+	           	</apex:repeat>
+	       		<br/>
+	    	</apex:pageblocktable><br/>     		
+	    		<apex:outputpanel >
+	    		<table style = "width : 100%">
+	    		<tr>
+	    		<td style = "width : 33%" align = "center">
+	    		<apex:commandButton rendered="{!sc.hasPrevious}" value=" First " action="{!firstr}" onclick="rerenderStates1()"/>
+	    		  <apex:outputtext value="    "/> 
+	            <apex:commandButton rendered="{!sc.hasPrevious}" value=" Previous " action="{!previous}" onclick="rerenderStates1()"/>
+	         	</td>
+	         	<td style = "width : 33%" align = "center">
+	         	<b>
+	            <apex:outputText rendered="{!(sc.pageNumber * sc.pageSize) < sc.TotalRecords}" value=" Showing {!sc.pageNumber * sc.pageSize} Records out Of {!sc.TotalRecords} Records "/>
+ 	            <apex:outputText rendered="{!(sc.pageNumber * sc.pageSize) >= sc.TotalRecords}" value=" Showing {!sc.TotalRecords} Records out Of {!sc.TotalRecords} Records "/>  
+	            <br/><apex:outputtext value="Record Count is {!lstQuote.size}"/>
+	            </b>
+	            </td>
+	            <td style = "width : 33%" align = "center">       
+	            <apex:commandButton rendered="{!sc.hasNext}" value=" Next " action="{!next}" onclick="rerenderStates1()" status="actStatusId"/>  
+	            <apex:outputtext value="    "/>         
+	            <apex:commandButton rendered="{!sc.hasNext}" value=" Last " action="{!lastR}" onclick="rerenderStates1()" />
+	         	</td>
+	         	</tr>
+	         	<tr align = "center"><td> </td><td> 
+	         	<b><apex:outputtext value="Page :- {!sc.pageNumber} "/></b>
+	         	</td><td></td></tr>
+	         	</table>  
+	         	</apex:outputpanel>  
+		</apex:pageblock>
+		<apex:outputpanel rendered="{!NOT(show)}">
+			<apex:outputtext value="{!Message}" style="font-size:12px;font-family:Arial;color:#000000;"/>
+		</apex:outputpanel>
+		</apex:outputpanel>
+</apex:outputpanel>	
+</apex:form>
+
+</apex:page>

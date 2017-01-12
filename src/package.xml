@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Custom List View Creator</fullName>
+    <types>
+        <members>CreateViewController</members>
+        <members>Custom_Controller</members>
+        <members>LookupController</members>
+        <members>MultiselectController</members>
+        <members>PostInstallTest</members>
+        <members>TestCreateViewController</members>
+        <members>TestLookupController</members>
+        <members>TestViewDisplayController</members>
+        <members>ViewDisplayController</members>
+        <members>postInstallClass</members>
+        <name>ApexClass</name>
+    </types>
+    <types>
+        <members>MultiselectPicklist</members>
+        <name>ApexComponent</name>
+    </types>
+    <types>
+        <members>Create_View</members>
+        <members>Lookup</members>
+        <members>ViewDisplay</members>
+        <name>ApexPage</name>
+    </types>
+    <types>
+        <members>Custom_View_Creator</members>
+        <name>CustomApplication</name>
+    </types>
+    <types>
+        <members>lstfield__c.Fields__c</members>
+        <members>lstfield__c.Filter_Condition__c</members>
+        <members>lstfield__c.Filter_Values__c</members>
+        <members>lstfield__c.Object__c</members>
+        <name>CustomField</name>
+    </types>
+    <types>
+        <members>lstfield__c</members>
+        <name>CustomObject</name>
+    </types>
+    <types>
+        <members>Custom_List_View</members>
+        <members>lstfield__c</members>
+        <name>CustomTab</name>
+    </types>
+    <types>
+        <members>lstfield__c-ListView_Fields Layout</members>
+        <name>Layout</name>
+    </types>
+    <types>
+        <members>lstfield__c.All</members>
+        <name>ListView</name>
+    </types>
+    <version>33.0</version>
+</Package>

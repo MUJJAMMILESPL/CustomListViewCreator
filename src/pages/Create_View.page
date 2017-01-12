@@ -1,0 +1,173 @@
+<apex:page standardController="lstfield__c" extensions="CreateViewController"  >
+<style>
+		.overlayStatus
+        {
+            position:fixed;
+            left:0;
+            top:0;
+            width:100%;
+            height:100%;
+            text-align:center;
+            vertical-align: middle;
+            background-color: #dcdcdc;
+            opacity:0.6;
+            filter:alpha(opacity=60);
+            z-index: 20 ;
+        }
+        .loadIMG
+        {
+         position : absolute;    
+		  width:30px;
+		  height:30px;
+		  left:50%;
+		  top:50%;
+		  margin-left:-100px;
+		  margin-top:-60px;         
+        }
+
+        .loadLabel
+        {
+            position : absolute;
+            font-weight:bold;
+            font-size:14px;
+            left:50%;
+			top:50%;
+			margin-left:-100px;
+			margin-top:-30px;
+            color:black;
+            align:center;
+        }       
+
+</style>
+<script>
+	var newWin=null;
+	function openLookupPopup(name, id,obj, fldname, datatype)
+	{
+		var parameters = "objectname="+obj+"&fieldname="+fldname+"&datatype="+datatype;
+		var url="/apex/Lookup?"+parameters+"&namefield=" + name + "&idfield=" + id;	
+		console.log("\n\n\n\n url is :- "+url);	
+		newWin=window.open(url, 'Popup','height=500,width=600,left=100,top=100,resizable=no,scrollbars=yes,toolbar=no,status=no');
+		if (window.focus) 
+		{
+			newWin.focus();
+		}
+			
+	    return false;
+    }
+		
+		function openLookupPopup1()
+		{
+			console.log(" clicked ... ");
+	    }
+				  
+	function closeLookupPopup()
+	{
+	   if (null!=newWin)
+	   {
+	      newWin.close();
+	   }  
+	}
+</script>
+
+
+<apex:form id="formId">		
+<apex:actionFunction name="rerenderStates"  action="{!getFieldList}" rerender="fields,filterid,wrapperListid" status="actStatusId"/>
+<apex:actionFunction name="rerenderStates1"  action="{!changeoperator}" rerender="operator,val,filterid" status="actStatusId">
+<apex:param name="firstParam" value="" />
+</apex:actionFunction>
+	<apex:actionStatus id="actStatusId" layout="block">		 	
+	     <apex:facet name="start" >
+	     <apex:outputpanel Styleclass="overlayStatus">
+	           <img src="/img/loading32.gif"  Class="loadIMG"/>
+	           <Label  Class="loadLabel">Processing...</Label>	                               
+	     </apex:outputpanel>
+	     </apex:facet>	     
+	 </apex:actionStatus>
+
+<apex:sectionHeader title="Quote" subtitle="{!msg}"/>
+<apex:pageMessages />
+
+    <apex:pageblock mode="edit">
+        <apex:pageblockButtons >
+	    	<apex:commandbutton value=" Save " action="{!Save}"/>
+	    	<apex:commandbutton value=" Cancel " action="{!Cancel}"/>    	
+    	</apex:pageblockButtons>
+    	
+        <apex:pageblockSection title="Step 1. Enter View Name">         
+                View Name: <apex:inputtext value="{!viewname}" />           
+        </apex:pageblockSection>
+        <apex:pageblockSection title="Step 2. Select Object">
+        	Select Object : 
+				<apex:selectList id="chooseObject" value="{!objectname}" size="1" onChange="rerenderStates()">			
+						<apex:selectOptions value="{!objectlist}" />			
+				</apex:selectList>
+        </apex:pageblockSection>
+        
+        <apex:pageBlockSection title="Step 3. Specify Filter Criteria" columns="1" id="filterid">
+			<apex:outputpanel >
+			<table width = "100%" >
+			<tr>	<th align = "center">Field</th>	
+					<th align = "center">Operator</th>	
+					<th align = "center">Value</th> 
+			</tr>
+			<apex:repeat value="{!lstwrapper}" var="wrap" id="wrapperListid">
+				<tr>							
+					<td align = "left">
+						<apex:outputpanel rendered="{!showNumber}">
+							<apex:outputtext value="{!wrap.rowNumber}. "/>
+						</apex:outputpanel>
+						<apex:selectList value="{!wrap.fieldName}" size="1" onChange="rerenderStates1({!wrap.rowNumber})" style="width:90%;">			
+								<apex:selectOptions value="{!lstfeld}"/>							
+						</apex:selectList> 
+						
+					</td>
+					<td align = "left">
+						<apex:outputpanel id="operator">
+<!-- 						{!wrap.datatype} -->
+							<apex:selectList value="{!wrap.operator}" size="1" style="width:90%;" rendered="{!if(wrap.datatype == 'unknown',true,false)}">			
+									<apex:selectOptions value="{!lstoperatorUnknown}"/>								
+							</apex:selectList>	
+							<apex:selectList value="{!wrap.operator}" size="1" style="width:90%;" rendered="{!if(wrap.datatype == 'STRING' &&  objectname != 'ApexClass'    ,true,false)}">			
+									<apex:selectOptions value="{!lstoperatorString}"/>								
+							</apex:selectList>	
+							<apex:selectList value="{!wrap.operator}" size="1" style="width:90%;" rendered="{!if(wrap.datatype == 'EMAIL' ,true,false)}">			
+									<apex:selectOptions value="{!lstoperatorString}"/>								
+							</apex:selectList>
+							<apex:selectList value="{!wrap.operator}" size="1" style="width:90%;" rendered="{!if(wrap.datatype == 'STRING' && objectname == 'ApexClass',true,false)}">			
+									<apex:selectOptions value="{!lstoperatorApexClassName}"/>								
+							</apex:selectList>
+													
+							<apex:selectList value="{!wrap.operator}" size="1" style="width:90%;" rendered="{!if(wrap.datatype == 'DOUBLE' || wrap.datatype == 'INTEGER' || wrap.datatype == 'Percent' ,true,false)}">			
+									<apex:selectOptions value="{!lstoperatorNumber}"/>								
+							</apex:selectList>	
+							<apex:selectList value="{!wrap.operator}" size="1" style="width:90%;" rendered="{!if(wrap.datatype == 'REFERENCE' || wrap.datatype == 'PICKLIST' || wrap.datatype == 'BOOLEAN' ,true,false)}">			
+									<apex:selectOptions value="{!lstoperatorlookup}"/>								
+							</apex:selectList>		
+						</apex:outputpanel>
+					</td>
+					<td align = "left">
+					<apex:outputpanel id="val">
+						<apex:inputHidden value="{!wrap.recordId}" id="targetId" />
+						<apex:inputtext value="{!wrap.value}" id="targetName" />
+						<apex:outputlink value="#"  onclick="openLookupPopup('{!$Component.targetName}', '{!$Component.targetId}','{!objectname}', '{!wrap.fieldName}','{!wrap.datatype}'); return false" rendered="{!if(wrap.datatype == 'REFERENCE' || wrap.datatype == 'PICKLIST' || wrap.datatype == 'BOOLEAN',true,false)}">
+								<img src="/s.gif" class="lookupIcon" onblur="this.className = 'lookupIcon';" onfocus="this.className = 'lookupIconOn';" 
+                					onmouseout="this.className = 'lookupIcon';this.className = 'lookupIcon';" onmouseover="this.className = 'lookupIconOn';this.className = 'lookupIconOn';" />
+						</apex:outputlink>						
+					</apex:outputpanel>
+					</td>
+				</tr>
+			</apex:repeat>  
+			</table>	
+			</apex:outputpanel>		  	
+         </apex:pageBlockSection> 
+         <apex:outputpanel id="Act">
+	        <apex:commandlink action="{!addrow}" value="Add Row " rerender="filterid,Act"/>  
+			<apex:commandlink action="{!deleterow}" value=" Delete Row" rerender="filterid,Act" rendered="{!if(Count > 5 ,true,false)}"/> 
+        </apex:outputpanel>
+        <apex:pageblockSection title="Step 4. Select Fields to Display" id="fields">        	
+              <c:MultiselectPicklist id="chooseField"  leftLabel="Available Fields"  leftOptions="{!LeftFieldList}"   rightLabel="Selected Fields"
+    								rightOptions="{!SelectedList}" size="8"    width="150px" />
+        </apex:pageblockSection>
+    </apex:pageblock>
+</apex:form>
+</apex:page>
