@@ -1,3 +1,4 @@
+// Added Class level comment
 public with sharing class CreateViewController {   
 
 	public String viewname {get;set;}
