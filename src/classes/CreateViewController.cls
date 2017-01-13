@@ -1,4 +1,5 @@
 // Added Class level comment
+// added new one
 public with sharing class CreateViewController {   
 
 	public String viewname {get;set;}
