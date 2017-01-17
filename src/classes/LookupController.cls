@@ -1,3 +1,4 @@
+// Adding class level comment
 public without sharing class LookupController {
 	//objectname=Invoice__c&fieldname=Amount__c&datatype=REFERENCE
 	//&namefield=j_id0:formId:j_id34:filterid:j_id46:0:targetName&idfield=j_id0:formId:j_id34:filterid:j_id46:0:targetId
