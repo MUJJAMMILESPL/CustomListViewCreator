@@ -6,3 +6,5 @@
     <tab>Custom_List_View</tab>
     <tab>lstfield__c</tab>
 </CustomApplication>
+
+
