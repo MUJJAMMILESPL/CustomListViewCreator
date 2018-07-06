@@ -16,6 +16,12 @@
       </sf:deploy>
     </target>
 	
+	<!-- Shows deploying code & running tests for code in directory -->
+    <target name="test">
+      <!-- Upload the contents of the "codepkg" directory, running the tests for just 1 class -->
+      <sf:deploy username="${sf.username}" password="${sf.password}" serverurl="https://login.salesforce.com" maxPoll="${sf.maxPoll}" deployRoot="src" rollbackOnError="true" checkonly="true">
+      </sf:deploy>
+    </target>
 	
 	<target name="undeploy">
       <!-- Upload the contents of the "codepkg" directory, running the tests for just 1 class -->
